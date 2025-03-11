@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { capitalizeWords, customToast } from "@/lib/utils";
-import { createEvent } from "@/redux/events/eventSlice";
+import { createEvent, createCategory } from "@/redux/events/eventSlice";
 import { storageServices } from "@/services/storageServices";
 import { Loader2, PlusCircle, Upload, X } from "lucide-react";
 import {
@@ -46,6 +46,9 @@ const AddEventDrawer = () => {
   });
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryLoading, setCategoryLoading] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -155,6 +158,33 @@ const AddEventDrawer = () => {
     }
   };
 
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) {
+      customToast("Please enter a category name");
+      return;
+    }
+
+    try {
+      setCategoryLoading(true);
+      const newCategory = await dispatch(
+        createCategory(newCategoryName.trim())
+      ).unwrap();
+
+      handleSelectChange("category", newCategory.$id);
+
+      setTimeout(() => {
+        setIsCreatingCategory(false);
+        setNewCategoryName("");
+      }, 300);
+      customToast("Category created successfully!");
+    } catch (error) {
+      console.error("Error creating category:", error);
+      customToast("Failed to create category. Please try again.");
+    } finally {
+      setCategoryLoading(false);
+    }
+  };
+
   return (
     <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
       <DrawerTrigger className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 px-5 rounded-md inline-flex items-center transition-all shadow-md hover:shadow-lg hover:translate-y-[-1px]">
@@ -226,29 +256,99 @@ const AddEventDrawer = () => {
                     />
                   </div>
 
-                  {/* Category field - right of location on desktop, beneath on mobile */}
+                  {/* Category field - with create option */}
                   <div className="space-y-2">
-                    <Label htmlFor="category" className="text-base font-medium">
-                      Category <span className="text-primary">*</span>
-                    </Label>
-                    <Select
-                      onValueChange={(value) => {
-                        console.log(value);
-                        handleSelectChange("category", value);
-                      }}
-                      value={eventData.category}
-                    >
-                      <SelectTrigger className="w-full focus-visible:ring-primary focus-visible:ring-2 border-muted-foreground/20">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.$id} value={category.$id}>
-                            {capitalizeWords(category.name)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex justify-between items-center">
+                      <Label
+                        htmlFor="category"
+                        className="text-base font-medium"
+                      >
+                        Category <span className="text-primary">*</span>
+                      </Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (!isCreatingCategory) {
+                            // Store the current category before switching
+                            const prevCategory = eventData.category;
+                            setEventData((prev) => ({ ...prev, category: "" }));
+
+                            // Animate the transition
+                            setIsCreatingCategory(true);
+                          } else {
+                            // Animate out
+                            setIsCreatingCategory(false);
+                          }
+                        }}
+                        className="h-7 px-2 text-xs hover:bg-muted/80 transition-colors"
+                      >
+                        {isCreatingCategory ? "Select Existing" : "Create New"}
+                      </Button>
+                    </div>
+
+                    <div className="relative h-10">
+                      <div
+                        className={`absolute w-full transition-all duration-300 ease-in-out ${
+                          isCreatingCategory
+                            ? "opacity-0 pointer-events-none"
+                            : "opacity-100"
+                        }`}
+                      >
+                        <Select
+                          onValueChange={(value) => {
+                            handleSelectChange("category", value);
+                          }}
+                          value={eventData.category}
+                        >
+                          <SelectTrigger className="w-full focus-visible:ring-primary focus-visible:ring-2 border-muted-foreground/20">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem
+                                key={category.$id}
+                                value={category.$id}
+                              >
+                                {capitalizeWords(category.name)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div
+                        className={`absolute w-full transition-all duration-300 ease-in-out ${
+                          isCreatingCategory
+                            ? "opacity-100"
+                            : "opacity-0 pointer-events-none"
+                        }`}
+                      >
+                        <div className="flex gap-2">
+                          <Input
+                            id="new-category"
+                            value={newCategoryName}
+                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            placeholder="Enter new category name"
+                            className="focus-visible:ring-primary focus-visible:ring-2 border-muted-foreground/20"
+                          />
+                          <Button
+                            onClick={handleCreateCategory}
+                            disabled={
+                              categoryLoading || !newCategoryName.trim()
+                            }
+                            className="bg-primary hover:bg-primary/90 transition-colors"
+                          >
+                            {categoryLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Create"
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

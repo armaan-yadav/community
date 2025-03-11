@@ -1,7 +1,6 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { GalleryVerticalEnd } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
+import logo from "/images/logo.svg";
 
 const AuthLayout = () => {
   return (
@@ -11,7 +10,7 @@ const AuthLayout = () => {
       transition={{ duration: 0.3 }}
       className="flex min-h-svh bg-gradient-to-br from-background via-background/90 to-secondary/20 overflow-hidden"
     >
-      {/* Left Panel - Form */}
+      {/* Left PanelForm */}
       <div className="w-full lg:w-1/2 flex flex-col p-3 sm:p-5 md:p-6 lg:p-8 relative z-10">
         {/* Logo */}
         <motion.div
@@ -26,7 +25,7 @@ const AuthLayout = () => {
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
               className="flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg bg-primary shadow-lg shadow-primary/20 text-primary-foreground transition-transform duration-200 group-hover:scale-105"
             >
-              <GalleryVerticalEnd className="size-4" />
+              <img src={logo} alt="logo" />
             </motion.div>
             <span className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
               The Communion Hub
@@ -35,7 +34,7 @@ const AuthLayout = () => {
         </motion.div>
 
         {/* Form Container - Outlet will render here */}
-        <div className="flex items-center justify-center">
+        <div className="flex-1 flex flex-col items-center justify-center py-4">
           <Outlet />
         </div>
 

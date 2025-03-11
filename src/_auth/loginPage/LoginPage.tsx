@@ -1,18 +1,39 @@
 import GoogleSVG from "@/components/shared/GoogleSVG";
 import { Input } from "@/components/ui/input";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { isValidEmail } from "@/lib/utils";
-import { authServices } from "@/services/authServices";
+import { loginUser } from "@/redux/user/userSlice";
 import { Label } from "@radix-ui/react-label";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { FormEvent, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("raj@gmail.com");
   const [password, setPassword] = useState("111111");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, error: authError } = useAppSelector(
+    (state) => state.user
+  );
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Update local error state if redux has error
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+      setIsLoading(false);
+    }
+  }, [authError]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,10 +52,11 @@ const LoginPage = () => {
     }
 
     try {
-      await authServices.login({ email, password });
-    } catch (err) {
-      setError("Login failed. Please check your credentials.");
-    } finally {
+      // Use Redux action instead of direct service call
+      await dispatch(loginUser({ email, password })).unwrap();
+      // Navigation will happen in the useEffect when isAuthenticated changes
+    } catch (err: any) {
+      setError(err.message || "Login failed. Please check your credentials.");
       setIsLoading(false);
     }
   };
@@ -88,7 +110,7 @@ const LoginPage = () => {
             Welcome Back
           </h1>
           <p className="text-xs md:text-sm text-muted-foreground max-w-xs mx-auto">
-            Enter your credentials to access your personal dashboard
+            Enter your credentials to log in
           </p>
         </motion.div>
 
@@ -125,12 +147,6 @@ const LoginPage = () => {
                 Password
                 <span className="h-1 w-1 rounded-full bg-primary/70 inline-block"></span>
               </Label>
-              <Link
-                to="/"
-                className="text-xs font-medium text-primary hover:text-primary/80 transition-colors underline-offset-4 hover:underline"
-              >
-                Forgot?
-              </Link>
             </div>
             <motion.div
               whileHover={{ scale: 1.005 }}

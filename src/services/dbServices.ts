@@ -40,6 +40,27 @@ class DbServices {
       throw error;
     }
   }
+
+  async addNewCategory(category: string): Promise<Category> {
+    try {
+      const response = await this.databases.createDocument(
+        this.databaseId,
+        this.categoriesCollectionId,
+        ID.unique(),
+        { name: category.trim() }
+      );
+
+      return response as unknown as Category;
+    } catch (error) {
+      console.error("Error adding new category:", error);
+      throw new Error(
+        `Failed to add category: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
   async getAllEventsByCategory({
     category,
   }: {

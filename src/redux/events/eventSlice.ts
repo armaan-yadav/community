@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { dbServices } from "../../services/dbServices";
 import { Category, Event, LocalEvent } from "../../types";
+import { RootState } from "../store";
 
 interface EventState {
   events: Event[];
@@ -8,10 +9,9 @@ interface EventState {
   currentEvent: Event | null;
   loading: boolean;
   error: string | null;
-  value: number; // Keeping the original counter for backward compatibility
+  value: number;
 }
 
-// Async thunk for fetching all events
 export const fetchEvents = createAsyncThunk(
   "event/fetchEvents",
   async (_, { rejectWithValue }) => {
@@ -74,6 +74,21 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+// Async thunk for adding a new category
+export const createCategory = createAsyncThunk(
+  "event/createCategory",
+  async (category: string, { rejectWithValue }) => {
+    try {
+      const newCategory = await dbServices.addNewCategory(category);
+      return newCategory;
+    } catch (error) {
+      return rejectWithValue(
+        (error as Error).message || "Failed to create category"
+      );
+    }
+  }
+);
+
 export const eventSlice = createSlice({
   name: "event",
   initialState: {
@@ -96,11 +111,6 @@ export const eventSlice = createSlice({
       state.events.push(action.payload);
     },
 
-    setCurrentEvent: (state, action: PayloadAction<string>) => {
-      state.currentEvent =
-        state.events.find((event) => event.$id === action.payload) || null;
-    },
-
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
@@ -115,6 +125,11 @@ export const eventSlice = createSlice({
     // Add a reducer for setting categories manually if needed
     setCategories: (state, action: PayloadAction<Category[]>) => {
       state.categories = action.payload;
+    },
+
+    // Add a reducer for adding a new category
+    addCategory: (state, action: PayloadAction<Category>) => {
+      state.categories.push(action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -173,18 +188,42 @@ export const eventSlice = createSlice({
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+
+      // Handle createCategory
+      .addCase(createCategory.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createCategory.fulfilled, (state, action) => {
+        state.categories.push(action.payload);
+        state.loading = false;
+      })
+      .addCase(createCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
+// Selector to get events by category ID
+export const selectEventsByCategoryId = (
+  state: RootState,
+  categoryId: string
+) => {
+  return state.event.events.filter(
+    (event) => event.category.$id === categoryId
+  );
+};
+
 export const {
   setEvents,
   addEvent,
-  setCurrentEvent,
   setLoading,
   setError,
   clearError,
-  setCategories, // Export the new action
+  setCategories,
+  addCategory, // Export the new action
 } = eventSlice.actions;
 
 const eventReducer = eventSlice.reducer;

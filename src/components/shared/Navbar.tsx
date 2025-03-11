@@ -1,14 +1,27 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { logoutUser } from "@/redux/user/userSlice";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const getInitial = () => {
+    return user?.name?.charAt(0)?.toUpperCase() || "?";
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    console.log("User logged out");
   };
 
   return (
@@ -22,7 +35,6 @@ const Navbar = () => {
               </span>
             </div>
 
-            {/* Desktop navigation */}
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
                 <Link
@@ -41,18 +53,32 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Right side actions */}
-          <div className="hidden md:flex items-center space-x-2">
-            <Button className="bg-primary hover:bg-primary/80 text-bright-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-              <Link to={"/login"}> Sign In</Link>
-            </Button>
+          <div className="hidden md:flex items-center space-x-3">
+            {isAuthenticated ? (
+              <>
+                <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium">
+                  {getInitial()}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 text-white bg-primary cursor-pointer hover:text-white"
+                >
+                  <LogOut size={16} /> Logout
+                </Button>
+              </>
+            ) : (
+              <Button className="bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                <Link to={"/login"}>Sign in</Link>
+              </Button>
+            )}
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground transition-colors text-primary"
+              className="inline-flex items-center justify-center p-2 rounded-md transition-colors text-primary"
               aria-expanded="false"
             >
               <motion.div
@@ -70,7 +96,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu  */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -114,12 +139,30 @@ const Navbar = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.3 }}
               >
-                <motion.button
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md text-sm font-medium w-full transition-colors"
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Link to={"/login"}>Sign in</Link>
-                </motion.button>
+                {isAuthenticated ? (
+                  <>
+                    <div className="flex items-center space-x-3 px-3 py-2">
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium">
+                        {getInitial()}
+                      </div>
+                      <span className="text-foreground">{user?.name}</span>
+                    </div>
+                    <motion.button
+                      onClick={handleLogout}
+                      className="flex items-center justify-center gap-2 bg-background border border-border hover:bg-destructive/10 hover:text-destructive text-foreground px-4 py-2 rounded-md text-sm font-medium w-full transition-colors"
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <LogOut size={16} /> Logout
+                    </motion.button>
+                  </>
+                ) : (
+                  <motion.button
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md text-sm font-medium w-full transition-colors"
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Link to={"/login"}>Sign in</Link>
+                  </motion.button>
+                )}
               </motion.div>
             </motion.div>
           </motion.div>

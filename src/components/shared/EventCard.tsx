@@ -9,6 +9,7 @@ import {
 import { Event } from "@/types";
 import { CalendarIcon, ChevronRight, ClockIcon, MapPin } from "lucide-react";
 import thumbnailImg from "../../../public/images/thumbnail.webp";
+import { Link } from "react-router-dom";
 
 interface EventCardProps {
   event: Event;
@@ -76,8 +77,10 @@ const EventCard = ({ event }: EventCardProps) => {
           variant="outline"
           className="flex items-center gap-1 rounded-md border-gray-200  text-white  cursor-pointer hover:text-bright-white w-full bg-gradient-to-r from-primary to-secondary"
         >
-          Event Details
-          <ChevronRight className="h-4 w-4" />
+          <Link to={`/events/${event.$id}`} className="flex-c" state={event}>
+            Event Details
+            <ChevronRight className="h-4 w-4" />
+          </Link>
         </Button>
       </CardFooter>
     </Card>

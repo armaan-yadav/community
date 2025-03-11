@@ -1,12 +1,13 @@
 import GoogleSVG from "@/components/shared/GoogleSVG";
 import { Input } from "@/components/ui/input";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { isValidEmail } from "@/lib/utils";
-import { authServices } from "@/services/authServices";
+import { signupUser } from "@/redux/user/userSlice";
 import { Label } from "@radix-ui/react-label";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { FormEvent, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
   const [name, setName] = useState("");
@@ -15,6 +16,26 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, error: authError } = useAppSelector(
+    (state) => state.user
+  );
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Update local error state if redux has error
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+      setIsLoading(false);
+    }
+  }, [authError]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -46,11 +67,10 @@ const SignupPage = () => {
     }
 
     try {
-      await authServices.createAccount({ name, email, password });
-      // Redirect handled by authServices
-    } catch (err) {
-      setError("Signup failed. Please try again.");
-    } finally {
+      await dispatch(signupUser({ name, email, password })).unwrap();
+      // Navigation will happen in the useEffect when isAuthenticated changes
+    } catch (err: any) {
+      setError(err.message || "Signup failed. Please try again.");
       setIsLoading(false);
     }
   };

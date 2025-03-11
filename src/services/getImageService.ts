@@ -2,7 +2,7 @@ import { storageServices } from "@/services/storageServices";
 import { customToast } from "@/lib/utils";
 
 export const getImage = async (prompt: string): Promise<string | null> => {
-  const API_KEY = import.meta.env.VITE_STABILITY_AI_API;
+  const API_KEY = import.meta.env.VITE_STABILITY_AI_API1;
   const API_URL = import.meta.env.VITE_STABILITY_AI_URL;
 
   if (!prompt) {

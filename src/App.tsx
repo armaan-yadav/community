@@ -1,39 +1,65 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { lazy, useEffect, Suspense } from "react";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 
-import Loading from "./components/shared/Loading";
-import { Toaster } from "./components/ui/sonner";
 import EventDetails from "./_root/eventDetails/EventDetails";
+import { Toaster } from "./components/ui/sonner";
+import { useAppDispatch, useAppSelector } from "./hooks/hooks";
+import { getCurrentUser } from "./redux/user/userSlice";
 
-// Lazy imports for layouts
+const Loading = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  </div>
+);
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoading } = useAppSelector((state) => state.user);
+
+  if (isLoading) return <Loading />;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const AuthLayout = lazy(() => import("./_auth/AuthLayout"));
 const RootLayout = lazy(() => import("./_root/RootLayout"));
 
-// Lazy imports for pages
 const Home = lazy(() => import("./_root/homePage/HomePage"));
 const LoginPage = lazy(() => import("./_auth/loginPage/LoginPage"));
 const SignupPage = lazy(() => import("./_auth/signupPage/SignupPage"));
 const AllEventsPage = lazy(() => import("./_root/allEventsPage/AllEventsPage"));
 
 function App() {
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch(getCurrentUser());
+  }, [dispatch]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <BrowserRouter>
-      {/* <Suspense fallback={<Loading />}> */}
-      <Routes>
-        {/* auth layout */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-        </Route>
-        {/* root layout */}
-        <Route element={<RootLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/events" element={<AllEventsPage />} />
-          <Route path="/events/:eventId" element={<EventDetails />} />
-        </Route>
-      </Routes>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
+          <Route element={<RootLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/events" element={<AllEventsPage />} />
+            <Route path="/events/:eventId" element={<EventDetails />} />
+          </Route>
+        </Routes>
+      </Suspense>
       <Toaster />
-      {/* </Suspense> */}
     </BrowserRouter>
   );
 }

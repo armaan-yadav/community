@@ -1,6 +1,7 @@
 import { client } from "@/config/appwrite";
 import { Account, Client, ID, Models } from "appwrite";
 import { AuthError } from "./error";
+import { customToast } from "@/lib/utils";
 
 class AuthServices {
   private client: Client;
@@ -20,6 +21,7 @@ class AuthServices {
     name: string;
     password: string;
   }): Promise<Models.User<Models.Preferences>> {
+    console.log(email, name, password);
     try {
       const user = await this.account.create(
         ID.unique(),
@@ -27,9 +29,12 @@ class AuthServices {
         password,
         name
       );
-      this.login({ email, password });
+      // Wait for login to complete
+      await this.login({ email, password });
       return user;
     } catch (error: any) {
+      console.log(error);
+      customToast(error.message);
       throw AuthError.fromAppwriteError(error);
     }
   }

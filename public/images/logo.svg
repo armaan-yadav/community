@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background Circle with subtle gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a7bff" />
+      <stop offset="100%" stop-color="#9d7fff" />
+    </linearGradient>
+    <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5d8aff" />
+      <stop offset="100%" stop-color="#b08fff" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main Circle -->
+  <circle cx="150" cy="150" r="140" fill="url(#bgGradient)" opacity="0.1" />
+  
+  <!-- Outer ring -->
+  <circle cx="150" cy="150" r="130" fill="none" stroke="url(#circleGradient)" stroke-width="6" />
+  
+  <!-- Inner connecting circles representing community/communion -->
+  <circle cx="120" cy="135" r="45" fill="#4a7bff" opacity="0.85" />
+  <circle cx="180" cy="135" r="45" fill="#9d7fff" opacity="0.85" />
+  <circle cx="150" cy="185" r="45" fill="#72ffaa" opacity="0.75" />
+  
+  <!-- Connecting lines -->
+  <line x1="120" y1="135" x2="180" y2="135" stroke="#ffffff" stroke-width="3" opacity="0.8" />
+  <line x1="120" y1="135" x2="150" y2="185" stroke="#ffffff" stroke-width="3" opacity="0.8" />
+  <line x1="180" y1="135" x2="150" y2="185" stroke="#ffffff" stroke-width="3" opacity="0.8" />
+  
+  <!-- Central dot -->
+  <circle cx="150" cy="150" r="10" fill="#ffffff" />
+  
+  <!-- Letter C in negative space -->
+  <path d="M150,80 A70,70 0 0,1 150,220 A70,70 0 0,1 150,80 Z" fill="#ffffff" opacity="0.2" />
+  <path d="M150,90 A60,60 0 0,1 150,210 A60,60 0 0,1 150,90 Z M150,110 A40,40 0 0,0 150,190 A40,40 0 0,0 150,110 Z" fill="#ffffff" opacity="0.9" />
+</svg>
