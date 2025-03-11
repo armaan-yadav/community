@@ -1,7 +1,7 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { authServices } from "@/services/authServices";
-import { Models } from "appwrite";
 import { customToast } from "@/lib/utils";
+import { authServices } from "@/services/authServices";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Models } from "appwrite";
 
 // Define the user state interface
 interface UserState {
@@ -48,7 +48,7 @@ export const loginUser = createAsyncThunk(
   "user/login",
   async (
     { email, password }: { email: string; password: string },
-    { rejectWithValue, dispatch }
+    { rejectWithValue }
   ) => {
     try {
       await authServices.login({ email, password });

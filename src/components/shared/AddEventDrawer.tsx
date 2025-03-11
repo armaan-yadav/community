@@ -1,9 +1,3 @@
-import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { capitalizeWords, customToast } from "@/lib/utils";
-import { createEvent, createCategory } from "@/redux/events/eventSlice";
-import { storageServices } from "@/services/storageServices";
-import { Loader2, PlusCircle, Upload, X } from "lucide-react";
 import {
   Drawer,
   DrawerClose,
@@ -14,6 +8,13 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { capitalizeWords, customToast } from "@/lib/utils";
+import { createCategory, createEvent } from "@/redux/events/eventSlice";
+import { getImage } from "@/services/getImageService";
+import { storageServices } from "@/services/storageServices";
+import { Loader2, PlusCircle, Upload, X } from "lucide-react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -26,7 +27,6 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { DatePicker } from "./DatePicker";
-import { getImage } from "@/services/getImageService";
 
 const AddEventDrawer = () => {
   const dispatch = useAppDispatch();
@@ -271,14 +271,10 @@ const AddEventDrawer = () => {
                         size="sm"
                         onClick={() => {
                           if (!isCreatingCategory) {
-                            // Store the current category before switching
-                            const prevCategory = eventData.category;
                             setEventData((prev) => ({ ...prev, category: "" }));
 
-                            // Animate the transition
                             setIsCreatingCategory(true);
                           } else {
-                            // Animate out
                             setIsCreatingCategory(false);
                           }
                         }}

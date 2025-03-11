@@ -1,5 +1,5 @@
-import { lazy, useEffect, Suspense } from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import EventDetails from "./_root/eventDetails/EventDetails";
 import { Toaster } from "./components/ui/sonner";
@@ -11,18 +11,6 @@ const Loading = () => (
     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
   </div>
 );
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAppSelector((state) => state.user);
-
-  if (isLoading) return <Loading />;
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-};
 
 const AuthLayout = lazy(() => import("./_auth/AuthLayout"));
 const RootLayout = lazy(() => import("./_root/RootLayout"));

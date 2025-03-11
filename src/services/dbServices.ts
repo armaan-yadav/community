@@ -1,6 +1,6 @@
 import { databases } from "@/config/appwrite";
 import { Category, Event, LocalEvent } from "@/types";
-import { Databases, ID, Locale, Query } from "appwrite";
+import { Databases, ID, Query } from "appwrite";
 
 class DbServices {
   private databaseId: string;
