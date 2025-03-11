@@ -5,6 +5,7 @@ A modern platform for faith communities to connect, share resources, and build m
 ## 🛠️ Tech Stack
 
 - **Frontend**: React with TypeScript
+- **Backend**: Appwrite
 - **State Management**: Redux Toolkit
 - **Styling**: Tailwind CSS with custom theming
 - **UI Components**: Shadcn
