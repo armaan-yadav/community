@@ -1,6 +1,6 @@
 import { databases } from "@/config/appwrite";
-import { Category } from "@/types";
-import { Databases, Query } from "appwrite";
+import { Category, Event, LocalEvent } from "@/types";
+import { Databases, ID, Locale, Query } from "appwrite";
 
 class DbServices {
   private databaseId: string;
@@ -44,16 +44,33 @@ class DbServices {
     category,
   }: {
     category: string;
-  }): Promise<Category[]> {
+  }): Promise<Event[]> {
     try {
       const response = await this.databases.listDocuments(
         this.databaseId,
         this.categoriesCollectionId,
         [Query.equal("category", category)]
       );
-      return response.documents.map((doc) => doc as unknown as Category);
+      return response.documents.map((doc) => doc as unknown as Event);
     } catch (error) {
       console.error("Error fetching lands:", error);
+      throw error;
+    }
+  }
+  async addEvent(
+    eventData: Omit<LocalEvent, "$id" | "$createdAt">
+  ): Promise<Event> {
+    console.log(eventData);
+    try {
+      const response = await this.databases.createDocument(
+        this.databaseId,
+        this.eventsCollectionId,
+        ID.unique(),
+        eventData
+      );
+      return response as unknown as Event;
+    } catch (error) {
+      console.error("Error adding event:", error);
       throw error;
     }
   }

@@ -17,7 +17,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <span className="text-primary font-bold text-xl">
+              <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
                 The Communion Hub
               </span>
             </div>
@@ -44,7 +44,7 @@ const Navbar = () => {
           {/* Right side actions */}
           <div className="hidden md:flex items-center space-x-2">
             <Button className="bg-primary hover:bg-primary/80 text-bright-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-              Sign In
+              <Link to={"/login"}> Sign In</Link>
             </Button>
           </div>
 
@@ -118,7 +118,7 @@ const Navbar = () => {
                   className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md text-sm font-medium w-full transition-colors"
                   whileTap={{ scale: 0.98 }}
                 >
-                  Sign Up
+                  <Link to={"/login"}>Sign in</Link>
                 </motion.button>
               </motion.div>
             </motion.div>

@@ -1,19 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
-@theme {
-  --color-midnight: #0f0c53;
-  --color-tahiti: #00d4ff;
-  --color-bermuda: #50f2d8;
-  --color-bright-white: #ffffff;
-  --color-soft-blue: #4a7bff;
-  --color-lavender: #9d7fff;
-  --color-pale-pink: #ff8ad8;
-  --color-mint: #5dfc9a;
-  --color-peach: #ff9966;
-  --color-sky: #7cd7ff;
-  --color-cream: #ffffff;
-  --color-sage: #a8f5c6;
-}
 
 @plugin "tailwindcss-animate";
 
@@ -32,7 +18,7 @@
   --secondary-foreground: #ffffff;
   --muted: #eef6ff;
   --muted-foreground: #5a698a;
-  --accent: #5dfc9a;
+  --accent: #4a7bff;
   --accent-foreground: #16143a;
   --destructive: #ff5c8d;
   --destructive-foreground: #ffffff;
@@ -150,4 +136,28 @@
 * {
   font-family: "Poppins", sans-serif;
   font-optical-sizing: auto;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.8);
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
 }

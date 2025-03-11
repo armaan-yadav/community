@@ -1,9 +1,21 @@
 export interface Event {
   title: string;
   date: Date;
-  description: string;
   location: string;
-  tags: string[];
+  description: string;
+  thumbnail?: string;
+  category: Category;
+  time: string;
+  $id: string;
+  $createdAt: string;
+}
+export interface LocalEvent {
+  title: string;
+  date: Date;
+  location: string;
+  description: string;
+  thumbnail: string | null;
+  time: string;
   category: string;
   $id: string;
   $createdAt: string;
